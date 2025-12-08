@@ -1,9 +1,0 @@
-C:/Users/rpala/OneDrive/Desktop/Fall2025/CST426/chess-base/build/CMakeFiles/Experimental.dir
-C:/Users/rpala/OneDrive/Desktop/Fall2025/CST426/chess-base/build/CMakeFiles/Nightly.dir
-C:/Users/rpala/OneDrive/Desktop/Fall2025/CST426/chess-base/build/CMakeFiles/Continuous.dir
-C:/Users/rpala/OneDrive/Desktop/Fall2025/CST426/chess-base/build/CMakeFiles/NightlyMemoryCheck.dir
-C:/Users/rpala/OneDrive/Desktop/Fall2025/CST426/chess-base/build/CMakeFiles/demo.dir
-C:/Users/rpala/OneDrive/Desktop/Fall2025/CST426/chess-base/build/CMakeFiles/PACKAGE.dir
-C:/Users/rpala/OneDrive/Desktop/Fall2025/CST426/chess-base/build/CMakeFiles/RUN_TESTS.dir
-C:/Users/rpala/OneDrive/Desktop/Fall2025/CST426/chess-base/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/rpala/OneDrive/Desktop/Fall2025/CST426/chess-base/build/CMakeFiles/ZERO_CHECK.dir
