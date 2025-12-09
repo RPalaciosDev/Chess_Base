@@ -24,14 +24,14 @@ char Chess::pieceNotation(int x, int y) const
     Bit *bit = _grid->getSquare(x, y)->bit();
     char notation = '0';
     if (bit) {
-        notation = bit->gameTag() < 128 ? wpieces[bit->gameTag()] : bpieces[bit->gameTag() - 128];
+        notation = bit->gameTag() < 128 ? wpieces[bit->gameTag()] : bpieces[bit->gameTag()-128];
     }
     return notation;
 }
 
 Bit* Chess::PieceForPlayer(const int playerNumber, ChessPiece piece)
 {
-    const char* pieces[] = {"pawn.png", "knight.png", "bishop.png", "rook.png", "queen.png", "king.png"};
+    const char* pieces[] = { "pawn.png", "knight.png", "bishop.png", "rook.png", "queen.png", "king.png" };
 
     Bit* bit = new Bit();
     // should possibly be cached from player class?
@@ -199,7 +199,7 @@ bool Chess::canBitMoveFromTo(Bit &bit, BitHolder &src, BitHolder &dst)
 
 void Chess::stopGame()
 {
-    _grid->forEachSquare([](ChessSquare *square, int x, int y) { 
+    _grid->forEachSquare([](ChessSquare* square, int x, int y) { 
         square->destroyBit(); 
     });
 }
@@ -211,7 +211,7 @@ Player* Chess::ownerAt(int x, int y) const
     }
 
     auto square = _grid->getSquare(x, y);
-    if (!square || !square->bit())m{
+    if (!square || !square->bit()) {
         return nullptr;
     }
     return square->bit()->getOwner();
@@ -236,17 +236,15 @@ std::string Chess::stateString()
 {
     std::string s;
     s.reserve(64);
-    _grid->forEachSquare([&](ChessSquare *square, int x, int y) {
-         s += pieceNotation(x, y); 
+    _grid->forEachSquare([&](ChessSquare* square, int x, int y) {
+         s += pieceNotation(x, y ); 
         }
     );
-    return s;
-}
+    return s;}
 
 void Chess::setStateString(const std::string &s)
 {
-    _grid->forEachSquare([&](ChessSquare* square, int x, int y)
-                         {
+    _grid->forEachSquare([&](ChessSquare* square, int x, int y) {
         int index = y * 8 + x;
         char playerNumber = s[index] - '0';
         if (playerNumber) {
