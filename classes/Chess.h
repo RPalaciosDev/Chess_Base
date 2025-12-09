@@ -29,18 +29,18 @@ public:
     std::string stateString() override;
     void setStateString(const std::string &s) override;
 
-    Grid *getGrid() override { return _grid; }
+    Grid* getGrid() override { return _grid; }
 
 private:
-    Bit *PieceForPlayer(const int playerNumber, ChessPiece piece);
-    Player *ownerAt(int x, int y) const;
+    Bit* PieceForPlayer(const int playerNumber, ChessPiece piece);
+    Player* ownerAt(int x, int y) const;
     void FENtoBoard(const std::string &fen);
     char pieceNotation(int x, int y) const;
     bool placePieceFromFEN(char fenChar, int x, int y);
     void syncEngineFromGrid();
     void regenerateLegalMoves();
 
-    Grid *_grid;
+    Grid* _grid;
     GameState _engineState;
     std::vector<BitMove> _legalMoves;
 };
