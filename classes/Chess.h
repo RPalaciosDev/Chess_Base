@@ -2,19 +2,11 @@
 
 #include "Game.h"
 #include "Grid.h"
+#include "GameState.h"
+#include "Bitboard.h"
+#include <vector>
 
 constexpr int pieceSize = 80;
-
-enum ChessPiece
-{
-    NoPiece,
-    Pawn,
-    Knight,
-    Bishop,
-    Rook,
-    Queen,
-    King
-};
 
 class Chess : public Game
 {
@@ -44,6 +36,11 @@ private:
     Player* ownerAt(int x, int y) const;
     void FENtoBoard(const std::string& fen);
     char pieceNotation(int x, int y) const;
+    bool placePieceFromFEN(char fenChar, int x, int y);
+    void syncEngineFromGrid();
+    void regenerateLegalMoves();
 
     Grid* _grid;
+    GameState _engineState;
+    std::vector<BitMove> _legalMoves;
 };

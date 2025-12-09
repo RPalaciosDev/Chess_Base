@@ -1,13 +1,11 @@
-Fork or clone your this chess project into a new GitHub repository.
+# Integrate GameState and Movement Code
 
-Add support for FEN stringsLinks to an external site. to your game setup so that instead of the current way you are setting up your game board you are setting it up with a call similar to the following call.
+## Summary
 
-FENtoBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+The work on this branch represents my efforts in joining the GameState and Bitboard code that Graeme Devine gave us in class so that those of us who have fallen behind can catchup for the tournament.
 
-Your routine should be able to take just the board position portion of a FEN string, or the entire FEN string like so:
+The chess engine now use the shared game state and parses the FEN string to validate the move logic. It then updates the UI to sync with the bitboard backend for further move generation and validation. However, the game currently requires two players too work as it does not contain any AI features.
 
-FENtoBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+## Changes
 
-(you can ignore the end for now)
-
-This will allow you to quickly check that your castling, promotion and en passant code is working.
+The visual frontend comprised by the Chess and Grid classes are now wired to GameState. Gamestate handles move generation by piece type. GameState uses Bitboard arrays for fast bitwise representation in move generation and attack validation. Most of thisis handled in generateAllMoves and filterOutIllegalMoves(). I use this code in syncEngineFromGrid(), where we initialize the engineState and regenerateLegalMoves() where we call generateAllMoves() to update our available legal moves. 
