@@ -5,11 +5,15 @@
 #include <functional>
 #include <tuple>
 #include <algorithm>
+#include <chrono>
+#include <iomanip>
 #include "ChessSquare.h"
+#include "ChessEval.h"
 
 Chess::Chess()
 {
     _grid = new Grid(8, 8);
+    _countMoves = 0;
 }
 
 Chess::~Chess()
@@ -54,6 +58,12 @@ void Chess::setUpBoard()
     FENtoBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
     syncEngineFromGrid();
     regenerateLegalMoves();
+
+    // Enable AI for player 1 (black)
+    if (gameHasAI()) {
+        setAIPlayer(AI_PLAYER);
+        _gameOptions.AIMAXDepth = 3; // Set search depth
+    }
 
     startGame();
 }
@@ -268,4 +278,102 @@ void Chess::regenerateLegalMoves()
 {
     syncEngineFromGrid();
     _legalMoves = _engineState.generateAllMoves();
+}
+
+int Chess::negamax(GameState& gamestate, int depth, int alpha, int beta)
+{
+    _countMoves++;
+
+    // Terminal node evaluation
+    if (depth == 0) {
+        static ChessEval evaluator;
+        PositionContext context;
+        context.whiteToMove = (gamestate.color == WHITE);
+        return evaluator.evaluate(gamestate.state, context);
+    }
+
+    // Generate all legal moves
+    std::vector<BitMove> newMoves = gamestate.generateAllMoves();
+    
+    // Check for terminal conditions (checkmate or stalemate)
+    if (newMoves.empty()) {
+        // Check if king is in check (checkmate) or not (stalemate)
+        // For simplicity, return a very negative value for checkmate, 0 for stalemate
+        // You may want to improve this check
+        return -10000; // Assume checkmate for now
+    }
+
+    int bestVal = std::numeric_limits<int>::min();
+
+    // code to generate moves and setup negamax here
+    for(const auto& move : newMoves) {
+        gamestate.pushMove(move);
+
+        bestVal = std::max(bestVal, -negamax(gamestate, depth - 1, -beta, -alpha));
+
+        // Undo the move
+        gamestate.popState();
+
+        // alpha beta cut-off
+        alpha = std::max(alpha, bestVal);
+        if (alpha >= beta) {
+            break;
+        }
+    }
+
+    // code to return bestVal here
+    return bestVal;
+}
+
+void Chess::updateAI()
+{
+    if (!gameHasAI()) return;
+
+    const auto searchStart = std::chrono::steady_clock::now();
+    _countMoves = 0;
+
+    syncEngineFromGrid();
+    std::vector<BitMove> moves = _engineState.generateAllMoves();
+
+    if (moves.empty()) {
+        endTurn();
+        return;
+    }
+
+    const int negInfinite = std::numeric_limits<int>::min();
+    int bestVal = negInfinite;
+    BitMove bestMove = moves[0];
+    int depth = getAIMAXDepth();
+    if (depth <= 0) depth = 3; // Default depth
+
+    // Try each move and find the best one
+    for (const auto& move : moves) {
+        _engineState.pushMove(move);
+        int moveVal = -negamax(_engineState, depth - 1, std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+        _engineState.popState();
+
+        if (moveVal > bestVal) {
+            bestVal = moveVal;
+            bestMove = move;
+        }
+    }
+
+    // Make the best move
+    if(bestVal != negInfinite) {
+        const double seconds = std::chrono::duration<double>(std::chrono::steady_clock::now() - searchStart).count();
+        const double boardsPerSecond = seconds > 0.0 ? static_cast<double>(_countMoves) / seconds : 0.0;
+        std::cout << "Moves checked: " << _countMoves
+                  << " (" << std::fixed << std::setprecision(2) << boardsPerSecond
+                  << " boards/s)" << std::defaultfloat << std::endl;
+
+        int srcSquare = bestMove.from;
+        int dstSquare = bestMove.to;
+        BitHolder& src = getHolderAt(srcSquare & 7, srcSquare / 8);
+        BitHolder& dst = getHolderAt(dstSquare & 7, dstSquare / 8);
+        Bit* bit = src.bit();
+        if (bit && dst.dropBitAtPoint(bit, ImVec2(0, 0))) {
+            src.setBit(nullptr);
+            bitMovedFromTo(*bit, src, dst);
+        }
+    }
 }

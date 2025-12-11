@@ -29,6 +29,9 @@ public:
     std::string stateString() override;
     void setStateString(const std::string &s) override;
 
+    bool gameHasAI() override { return true; }
+    void updateAI() override;
+
     Grid* getGrid() override { return _grid; }
 
 private:
@@ -39,8 +42,10 @@ private:
     bool placePieceFromFEN(char fenChar, int x, int y);
     void syncEngineFromGrid();
     void regenerateLegalMoves();
+    int negamax(GameState& gamestate, int depth, int alpha, int beta);
 
     Grid* _grid;
     GameState _engineState;
     std::vector<BitMove> _legalMoves;
+    int _countMoves;
 };
